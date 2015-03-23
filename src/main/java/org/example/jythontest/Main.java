@@ -1,0 +1,33 @@
+/*
+ * Run as: java -jar target/jythontest-1.0.0-SNAPSHOT-jar-with-dependencies.jar
+ */
+
+package org.example.jythontest;
+
+import org.python.util.PythonInterpreter;
+import org.python.core.*;
+
+
+public class Main
+{
+    static String pyPath = "./";
+    static String pyScript = "test"; // Filename sans ".py"
+
+    public static void main( String[] args )
+    {
+        PySystemState pysys = new PySystemState();
+        pysys.path.insert(0, Py.java2py(pyPath));
+        PythonInterpreter py = new PythonInterpreter(new PyDictionary(), pysys);
+        py.exec("from " + pyScript + " import *");
+        PyFunction pyFun = (PyFunction)py.get("fun");
+        try
+        {
+            int rc = pyFun.__call__().asInt();
+            System.out.println("Python returned: " + rc);
+        }
+        catch (Exception e)
+        {
+            System.out.println("argh");
+        }
+    }
+}
