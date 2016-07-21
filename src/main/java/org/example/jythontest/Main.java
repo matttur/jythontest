@@ -1,4 +1,5 @@
 /*
+ * Build with: mvn deploy
  * Run as: java -jar target/jythontest-1.0.0-SNAPSHOT-jar-with-dependencies.jar
  */
 
@@ -17,9 +18,9 @@ public class Main
     {
         PySystemState pysys = new PySystemState();
         pysys.path.insert(0, Py.java2py(pyPath));
-        PythonInterpreter py = new PythonInterpreter(new PyDictionary(), pysys);
-        py.exec("from " + pyScript + " import *");
-        PyFunction pyFun = (PyFunction)py.get("fun");
+        PyObject importer = pysys.getBuiltins().__getitem__(Py.newString("__import__"));
+        PyObject module = importer.__call__(Py.newString(pyScript));
+        PyFunction pyFun = (PyFunction)module.__getattr__("fun");
         try
         {
             int rc = pyFun.__call__().asInt();
